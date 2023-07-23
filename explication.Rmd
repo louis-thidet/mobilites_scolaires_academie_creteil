@@ -1,0 +1,96 @@
+---
+title: ""
+metadata title: "THIDET_Louis_Exo_final"
+author: "Louis THIDET"
+output: html_notebook
+---
+
+<h4>
+  Louis THIDET
+</h4>
+<center>
+  ![](img/Universite_Paris-Cite-logo.jpeg){width="35%"}
+</center>
+<center>
+  <h2>
+    Datamining : Devoir final
+  </h2>
+</center>
+<center>
+  <h4>
+    Visualisation des mobilités scolaires de l'enseignement primaire et secondaire dans l'Académie de Créteil
+  </h4>
+</center>
+
+<br>
+
+### **Introduction**
+
+Ce document restitue la démarche de construction d'une application Shiny servant à visualiser les mobilités intercommunales liées à l'enseignement primaire et secondaire au sein de l'Académie de Créteil. Son objectif est de permettre à l'utilisateur (probablement un chercheur) de visualiser au sein de l'Académie où étudient les élèves des différentes communes, et de déceler des dynamiques de flux.
+
+[Cliquer pour accéder à l'application en ligne](https://louis-thidet.shinyapps.io/thidet_louis_exo_final/)
+
+
+## **1. Principe de l'application**
+
+L'application consiste en la combinaison de deux cartes sur lesquelles l'utilisateur peut interagir via divers paramètres. L'une des deux cartes est dite "statique" tandis que l'autre est dite "dynamique" ; c'est-à-dire que l'on peut agir en temps réel sur la seconde carte pour afficher de nouveaux éléments. La première carte permet de visualiser une généralité tandis que la seconde permet de se focaliser sur le détail. La carte dynamique est une carte réalisée avec le package javascript Leaflet. On s'en sert notamment pour voir où se trouvent les différentes écoles de l'académie étudiée.
+
+**Remarque** : L'application est prévue pour être utilisée sur un ordinateur accompagné d'un grand écran (Elle a été réalisée sur un écran de 24 pouces), il se peut donc que son interface soit trop grande pour être affichée entièrement sur un petit écran. Cependant, on peut palier à ce problème en dézoomant la fenêtre du navigateur internet.
+
+## **2. Description et préparation des données**
+
+------------------------------------------------------------------------
+
+<h4> **Description des données** </h4>
+
+On a, pour réaliser cette application, utilisé deux bases de données : la base du Recensement de la population 2019, dans son fichier détail Logements, individus, activité, mobilités scolaires et professionnelles, migrations résidentielles en 2019 (RP2019 MOBSCO), et la base Adresse et géolocalisation des établissements d'enseignement du premier et second degrés (base ADRESSES). La première émane de l'INSEE et permet de savoir où les élèves étudient et où ils habitent tandis que la seconde repertorie l'entièreté des établissements de l'enseignement primaire et secondaire, et émane directement du gouvernement. D'autres bases semblables à la seconde existaient, mais on a retenu celle-ci, à cause de la sûreté de son émetteur mais aussi parce qu'elle est spécialisée (contrairement, par exemple, aux bases liées à l'inventaire des équipements publics).
+
+La base RP2019 MOBSCO contient notamment : la commune de résidence de l'élève, sa commune de scolarisation, la catégorie socio-professionnelle de ses parents, le type de scolarisation de l'élève (CAP, brevet...). Ce sont les données que l'on a retenues.
+
+
+<h4> **Nettoyage des données** </h4>
+
+On a nettoyé la base RP2019 pour que seuls les élèves du primaire et du secondaire soient comptés (Elle concerne aussi des élèves de l'enseignement supérieur), et la base ADRESSES pour ne pas enregistrer les écoles qui n'existaient pas avant le 1er janvier 2020. Un filtre a été appliqué aux données pour qu'elle soient absolument restreintes à l'Académie de Créteil. Les mobilités scolaires vers les académies alentours n'ont pas été retenues (explication dans la partie sur les pistes d'amélioration).
+
+## **4. Réalisation de l'application Shiny**
+
+------------------------------------------------------------------------
+
+L'application présente les deux cartes, statique et dynamique, côté-à-côte, et plusieurs paramètres à sélectionner. Elle permet d'abord de faire le choix entre les trois départements de l'Académie de Créteil et entre les deux sens de mobilité scolaire : vers la commune ou en-dehors de la commune. L'application pose à l'utilisateur les questions suivantes : souhaite-t-on observer les dynamiques de la Seine-Saint-Denis, du Val-de-Marne ou de la Seine-et-Marne ? Observer la mobilité des élèves vers une commune, ou depuis une commune ?
+
+L'utilisateur a le choix d'afficher l'entièreté d'un département ou une commune de ce département. 
+
+• Lorsque l'utilisateur fait le choix d'afficher tout le département, en sélectionnant dans le déroulant "Sélection de la commune" le choix "Toutes les communes", il voit des cartes choroplètes montrant soit la proportion des élèves scolarisés dans les communes qui résident en même temps dans ces communes, soit la proportion d'élèves des communes qui proviennent d'autres communes. Lorsque l'utilisateur, sur la carte dynamique, clique sur une commune, il peut voir précisément :
+
+- la part d'élèves scolarisés résidents de la commune,
+- la part d'élèves scolarisés venant d'une autre commune
+- le nombre d'élèves scolarisés résidents
+- le nombre d'élèves scolarisés venant d'une autre commune
+
+• Lorsque l'utilisateur sélectionne une commune, il voit sur la carte statique une carte de stock montrant le nombre d'élèves provenant d'autres communes, ou quittant la commune pour aller dans d'autres communes. Il peut obtenir les chiffres de chaque commune en cliquant sur celles-ci sur la carte dynamique. Il a par ailleurs la possibilité de filtrer les données en fonction de la catégorie socio-professionnelle des parents des élèves et en fonction du type de scolarisation des élèves.
+
+Quoi que fasse l'utilisateur, un chiffre clé s'affiche :
+
+- S'il cible une commune et souhaite voir les déplacements vers l'extérieur de la commune, il voit : la part des élèves résidant dans la commune mais scolarisés ailleurs
+- S'il cible une commune et souhaite voir les déplacements vers la commune, il voit : la part des élèves scolarisés dans la commune mais n'y résidant pas
+- S'il cible tout le département et souhaite voir les déplacements vers l'extérieur des communes, il voit : la part moyenne d'élèves scolarisés dans leur commune de résidence
+- S'il cible tout le département et souhaite voir les déplacements vers les communes, il voit : la part moyenne d'élèves scolarisés ailleurs que dans leur commune de résidence dans le département
+
+
+L'application est dotée de quelques fonctions esthétiques, pour permettre à l'utilisateur de produire des cartes qui lui plaisent, ou avec plus ou moins de visibilité (du fait du grand nombre de communes, la visibilité des cartes peut varier grandement). Il peut choisir le thème et la couleur des cartes. Il a aussi la possibilité de choisir le type des classes des cartes choroplètes et le nombre de ces classes.
+
+Enfin, l'application permet de visualiser des tableaux de données. Il y a des tableaux de données servant de sortie aux données affichées sur les cartes, et des tableaux montrant les données brutes des bases de données (mais nettoyées pour l'utilisation de l'application). L'utilisateur a la possibilité de télécharger ces données via des boutons.
+
+
+##  **5. Les pistes d'améliorations / ce qui n'a pas été fait**
+
+------------------------------------------------------------------------
+
+- On souhaitait laisser à l'utilisateur la possibilité d'afficher deux cartes statiques ou deux cartes dynamiques en même temps, de paramétrer deux cartes aux paramètres indépenedants, mais on a abandonné cette idée, parce qu'elle peut nécessiter des traitements lourds pour l'ordinateur utilisant l'application, et parce que l'utilisation de deux cartes fonctionnement conjointement est plus intuitive.
+
+- On souhaitait au départ permettre à l'application de prendre en compte toute l'Ile-de-France, étant donné que bon nombre des déplacements scolaires se font entre les académies (ne serait-ce que vers celle Paris), mais on a dû abandonner cette idée à cause du temps (La manipulation des données est rendue assez compliquée à cause de l'Académie de Paris). Par ailleurs, le but ultime de l'application serait qu'elle soit prolongée à l'entièreté de la France.
+
+- Un script dédié à la mise à jour automatique des données de l'application a été réalisé, mais Shinyapps.io ne prend pas en compte ce genre de possibilité (du moins pas dans sa version gratuite). Les applications lancées sur Shinyapps.io ne sont pas persistantes et elles nécessitent pour être mises à jour d'être redéployées. Néanmoins ce problème pourrait être contourné si l'on programmait un serveur pour que l'application soit automatiquement redéployée périodiquement sur Shinyapps.io (par exemple via le programme CRON de Linux).
+Précisons que si l'application en ligne ne se met pas à jour automatiquement, le script est parfaitement fonctionnel. Il se connecte aux API des bases de données utilisées et permet en une exécution de mettre à jour les données de l'application.
+
+- Certaines redondances dans le code s'expliquent par le fait que les fonctions n'étaient pas toujours possibles, à cause de l'architecture même d'une application Shiny.
